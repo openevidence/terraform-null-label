@@ -4,7 +4,7 @@ locals {
     # The `tenant` label was introduced in v0.25.0. To preserve backward compatibility, or, really, to ensure
     # that people using the `tenant` label are alerted that it was not previously supported if they try to
     # use it in an older version, it is not included by default.
-    label_order         = ["namespace", "region", "environment", "name", "attributes"]
+    label_order         = ["namespace", "environment", "region", "name", "attributes"]
     regex_replace_chars = "/[^-a-zA-Z0-9]/"
     delimiter           = "-"
     replacement         = ""
@@ -49,8 +49,8 @@ locals {
     namespace = var.namespace == null ? var.context.namespace : var.namespace
     # tenant was introduced in v0.25.0, prior context versions do not have it
     tenant      = var.tenant == null ? lookup(var.context, "tenant", null) : var.tenant
-    region      = var.region == null ? var.context.region : var.region
     environment = var.environment == null ? var.context.environment : var.environment
+    region      = var.region == null ? var.context.region : var.region
     name        = var.name == null ? var.context.name : var.name
     delimiter   = var.delimiter == null ? var.context.delimiter : var.delimiter
     # modules tack on attributes (passed by var) to the end of the list (passed by context)
@@ -73,7 +73,7 @@ locals {
   regex_replace_chars = coalesce(local.input.regex_replace_chars, local.defaults.regex_replace_chars)
 
   # string_label_names are names of inputs that are strings (not list of strings) used as labels
-  string_label_names = ["namespace", "tenant", "region", "environment", "name"]
+  string_label_names = ["namespace", "tenant", "environment", "region", "name"]
   normalized_labels = { for k in local.string_label_names : k =>
     local.input[k] == null ? "" : replace(local.input[k], local.regex_replace_chars, local.replacement)
   }
@@ -92,8 +92,8 @@ locals {
 
   namespace   = local.formatted_labels["namespace"]
   tenant      = local.formatted_labels["tenant"]
-  region      = local.formatted_labels["region"]
   environment = local.formatted_labels["environment"]
+  region      = local.formatted_labels["region"]
   name        = local.formatted_labels["name"]
 
   delimiter        = local.input.delimiter == null ? local.defaults.delimiter : local.input.delimiter
@@ -123,8 +123,8 @@ locals {
   tags_context = {
     namespace   = local.namespace
     tenant      = local.tenant
-    region      = local.region
     environment = local.environment
+    region      = local.region
     # For AWS we need `Name` to be disambiguated since it has a special meaning
     name       = local.id
     attributes = local.id_context.attributes
@@ -140,8 +140,8 @@ locals {
   id_context = {
     namespace   = local.namespace
     tenant      = local.tenant
-    region      = local.region
     environment = local.environment
+    region      = local.region
     name        = local.name
     attributes  = join(local.delimiter, local.attributes)
   }
@@ -171,8 +171,8 @@ locals {
     enabled             = local.enabled
     namespace           = local.namespace
     tenant              = local.tenant
-    region              = local.region
     environment         = local.environment
+    region              = local.region
     name                = local.name
     delimiter           = local.delimiter
     attributes          = local.attributes

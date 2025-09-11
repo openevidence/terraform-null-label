@@ -4,8 +4,8 @@ variable "context" {
     enabled             = true
     namespace           = null
     tenant              = null
-    region              = null
     environment         = null
+    region              = null
     name                = null
     delimiter           = null
     attributes          = []
@@ -63,16 +63,16 @@ variable "tenant" {
   description = "ID element _(Rarely used, not included by default)_. A customer identifier, indicating who this instance of a resource is for"
 }
 
-variable "region" {
-  type        = string
-  default     = null
-  description = "ID element. Used for region e.g. 'uw2', 'us-west-2'"
-}
-
 variable "environment" {
   type        = string
   default     = null
   description = "ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release'"
+}
+
+variable "region" {
+  type        = string
+  default     = null
+  description = "ID element. Used for region e.g. 'uw2', 'us-west-2'"
 }
 
 variable "name" {
@@ -144,7 +144,7 @@ variable "label_order" {
   default     = null
   description = <<-EOT
     The order in which the labels (ID elements) appear in the `id`.
-    Defaults to ["namespace", "region", "environment", "name", "attributes"].
+    Defaults to ["namespace", "environment", "region", "name", "attributes"].
     You can omit any of the 6 labels ("tenant" is the 6th), but at least one must be present.
     EOT
 }
