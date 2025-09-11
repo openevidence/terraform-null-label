@@ -27,7 +27,7 @@ type NLContext struct {
 	Name              interface{}       `json:"name"`
 	Namespace         interface{}       `json:"namespace"`
 	RegexReplaceChars interface{}       `json:"regex_replace_chars"`
-	Stage             interface{}       `json:"stage"`
+	Environment       interface{}       `json:"environment"`
 	Tags              map[string]string `json:"tags"`
 	Tenant            interface{}       `json:"tenant"`
 }
@@ -73,11 +73,11 @@ func TestExamplesComplete(t *testing.T) {
 		Namespace:   "CloudPosse",
 		Tenant:      "H.R.H",
 		Region:      "USC1",
-		Stage:       "build",
+		Environment: "build",
 		Name:        "Winston Churchroom",
 		Attributes:  []string{"fire", "water", "earth", "air"},
 		Delimiter:   nil,
-		LabelOrder:  []string{"name", "tenant", "region", "stage", "attributes"},
+		LabelOrder:  []string{"name", "tenant", "region", "environment", "attributes"},
 		Tags: map[string]string{
 			"City":        "Dublin",
 			"Region":      "Global",
@@ -97,7 +97,7 @@ func TestExamplesComplete(t *testing.T) {
 		"City":        "Dublin",
 		"Region":      "Global",
 		"Namespace":   "cloudposse",
-		"Stage":       "build",
+		"Environment": "build",
 		"Tenant":      "hrh",
 		"Name":        "winstonchurchroom-hrh-usc1-build-fire-water-earth-air",
 		"Attributes":  "fire-water-earth-air",
@@ -143,7 +143,7 @@ func TestExamplesComplete(t *testing.T) {
 	var expectedLabel3cContext, label3cContext NLContext
 	_ = reprint.FromTo(&expectedLabel1Context, &expectedLabel3cContext)
 	expectedLabel3cContext.Name = "Starfish"
-	expectedLabel3cContext.Stage = "release"
+	expectedLabel3cContext.Environment = "release"
 	expectedLabel3cContext.Delimiter = "."
 	expectedLabel3cContext.RegexReplaceChars = "/[^-a-zA-Z0-9.]/"
 	expectedLabel3cContext.Tags["Eat"] = "Carrot"
@@ -162,7 +162,7 @@ func TestExamplesComplete(t *testing.T) {
 	var expectedLabel3nContext, label3nContext NLContext
 	_ = reprint.FromTo(&expectedLabel1NormalizedContext, &expectedLabel3nContext)
 	expectedLabel3nContext.Name = "Starfish"
-	expectedLabel3nContext.Stage = "release"
+	expectedLabel3nContext.Environment = "release"
 	expectedLabel3nContext.Delimiter = "."
 	expectedLabel3nContext.RegexReplaceChars = "/[^-a-zA-Z0-9.]/"
 	expectedLabel3nContext.Tags["Eat"] = "Carrot"
@@ -238,7 +238,7 @@ func TestExamplesComplete(t *testing.T) {
 	label8dChained := terraform.Output(t, terraformOptions, "label8d_chained_context_labels_as_tags")
 	assert.Equal(t, "eg-demo-blue-cluster", label8dID)
 	assert.Equal(t, label8dID, label8dContextID, "ID and context ID should be equal")
-	assert.Equal(t, "attributes-region-name-stage", label8dChained)
+	assert.Equal(t, "attributes-region-name-environment", label8dChained)
 
 	label8dTags := terraform.OutputMap(t, terraformOptions, "label8d_tags")
 	label8dContextTags := terraform.OutputMap(t, terraformOptions, "label8d_context_tags")

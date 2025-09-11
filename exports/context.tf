@@ -27,7 +27,7 @@ module "this" {
   namespace           = var.namespace
   tenant              = var.tenant
   region              = var.region
-  stage               = var.stage
+  environment         = var.environment
   name                = var.name
   delimiter           = var.delimiter
   attributes          = var.attributes
@@ -53,7 +53,7 @@ variable "context" {
     namespace           = null
     tenant              = null
     region              = null
-    stage               = null
+    environment         = null
     name                = null
     delimiter           = null
     attributes          = []
@@ -117,7 +117,7 @@ variable "region" {
   description = "ID element. Used for region e.g. 'uw2', 'us-west-2'"
 }
 
-variable "stage" {
+variable "environment" {
   type        = string
   default     = null
   description = "ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release'"
@@ -192,7 +192,7 @@ variable "label_order" {
   default     = null
   description = <<-EOT
     The order in which the labels (ID elements) appear in the `id`.
-    Defaults to ["namespace", "region", "stage", "name", "attributes"].
+    Defaults to ["namespace", "region", "environment", "name", "attributes"].
     You can omit any of the 6 labels ("tenant" is the 6th), but at least one must be present.
     EOT
 }
