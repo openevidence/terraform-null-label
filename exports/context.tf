@@ -27,7 +27,7 @@ module "this" {
   namespace           = var.namespace
   tenant              = var.tenant
   environment         = var.environment
-  region              = var.region
+  location            = var.location
   name                = var.name
   delimiter           = var.delimiter
   attributes          = var.attributes
