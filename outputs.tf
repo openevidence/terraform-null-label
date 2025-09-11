@@ -23,9 +23,9 @@ output "tenant" {
   description = "Normalized tenant"
 }
 
-output "region" {
-  value       = local.enabled ? local.region : ""
-  description = "Normalized region"
+output "location" {
+  value       = local.enabled ? local.location : ""
+  description = "Normalized location"
 }
 
 output "name" {
@@ -40,7 +40,7 @@ output "environment" {
 
 output "delimiter" {
   value       = local.enabled ? local.delimiter : ""
-  description = "Delimiter between `namespace`, `tenant`, `region`, `environment`, `name` and `attributes`"
+  description = "Delimiter between `namespace`, `tenant`, `location`, `environment`, `name` and `attributes`"
 }
 
 output "attributes" {
