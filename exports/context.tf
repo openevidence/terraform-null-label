@@ -21,7 +21,7 @@
 #
 
 module "this" {
-  source = "git::https://github.com/openevidence/terraform-null-label.git?ref=488ab91e34a24a86957e397d9f7262ec5925586a" # v0.25.0
+  source = "git::https://github.com/openevidence/terraform-null-label.git?ref=c7f4dd8d4a03886088a5d82332e3098019d31cdc" # v0.26.0
 
   enabled             = var.enabled
   namespace           = var.namespace
