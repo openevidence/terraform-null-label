@@ -23,9 +23,9 @@ output "tenant" {
   description = "Normalized tenant"
 }
 
-output "environment" {
-  value       = local.enabled ? local.environment : ""
-  description = "Normalized environment"
+output "location" {
+  value       = local.enabled ? local.location : ""
+  description = "Normalized location"
 }
 
 output "name" {
@@ -33,14 +33,14 @@ output "name" {
   description = "Normalized name"
 }
 
-output "stage" {
-  value       = local.enabled ? local.stage : ""
-  description = "Normalized stage"
+output "environment" {
+  value       = local.enabled ? local.environment : ""
+  description = "Normalized environment"
 }
 
 output "delimiter" {
   value       = local.enabled ? local.delimiter : ""
-  description = "Delimiter between `namespace`, `tenant`, `environment`, `stage`, `name` and `attributes`"
+  description = "Delimiter between `namespace`, `tenant`, `location`, `environment`, `name` and `attributes`"
 }
 
 output "attributes" {

@@ -5,7 +5,7 @@ variable "context" {
     namespace           = null
     tenant              = null
     environment         = null
-    stage               = null
+    location            = null
     name                = null
     delimiter           = null
     attributes          = []
@@ -66,13 +66,13 @@ variable "tenant" {
 variable "environment" {
   type        = string
   default     = null
-  description = "ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT'"
+  description = "ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release'"
 }
 
-variable "stage" {
+variable "location" {
   type        = string
   default     = null
-  description = "ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release'"
+  description = "ID element. Used for location e.g. 'uw2', 'us-west-2'"
 }
 
 variable "name" {
@@ -144,7 +144,7 @@ variable "label_order" {
   default     = null
   description = <<-EOT
     The order in which the labels (ID elements) appear in the `id`.
-    Defaults to ["namespace", "environment", "stage", "name", "attributes"].
+    Defaults to ["namespace", "environment", "location", "name", "attributes"].
     You can omit any of the 6 labels ("tenant" is the 6th), but at least one must be present.
     EOT
 }

@@ -1,14 +1,14 @@
 #
-# ONLY EDIT THIS FILE IN github.com/cloudposse/terraform-null-label
+# ONLY EDIT THIS FILE IN github.com/openevidence/terraform-null-label
 # All other instances of this file should be a copy of that one
 #
 #
-# Copy this file from https://github.com/cloudposse/terraform-null-label/blob/master/exports/context.tf
+# Copy this file from https://github.com/openevidence/terraform-null-label/blob/main/exports/context.tf
 # and then place it in your Terraform module to automatically get
 # Cloud Posse's standard configuration inputs suitable for passing
 # to Cloud Posse modules.
 #
-# curl -sL https://raw.githubusercontent.com/cloudposse/terraform-null-label/master/exports/context.tf -o context.tf
+# curl -sL https://raw.githubusercontent.com/openevidence/terraform-null-label/main/exports/context.tf -o context.tf
 #
 # Modules should access the whole context as `module.this.context`
 # to get the input variables with nulls for defaults,
@@ -21,14 +21,13 @@
 #
 
 module "this" {
-  source  = "cloudposse/label/null"
-  version = "0.25.0" # requires Terraform >= 0.13.0
+  source = "git::https://github.com/openevidence/terraform-null-label.git?ref=488ab91e34a24a86957e397d9f7262ec5925586a" # v0.25.0
 
   enabled             = var.enabled
   namespace           = var.namespace
   tenant              = var.tenant
   environment         = var.environment
-  stage               = var.stage
+  location            = var.location
   name                = var.name
   delimiter           = var.delimiter
   attributes          = var.attributes
@@ -45,7 +44,7 @@ module "this" {
   context = var.context
 }
 
-# Copy contents of cloudposse/terraform-null-label/variables.tf here
+# Copy contents of openevidence/terraform-null-label/variables.tf here
 
 variable "context" {
   type = any
@@ -54,7 +53,7 @@ variable "context" {
     namespace           = null
     tenant              = null
     environment         = null
-    stage               = null
+    location            = null
     name                = null
     delimiter           = null
     attributes          = []
@@ -115,13 +114,13 @@ variable "tenant" {
 variable "environment" {
   type        = string
   default     = null
-  description = "ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT'"
+  description = "ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release'"
 }
 
-variable "stage" {
+variable "location" {
   type        = string
   default     = null
-  description = "ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release'"
+  description = "ID element. Used for location e.g. 'uw2', 'us-west-2'"
 }
 
 variable "name" {
@@ -193,7 +192,7 @@ variable "label_order" {
   default     = null
   description = <<-EOT
     The order in which the labels (ID elements) appear in the `id`.
-    Defaults to ["namespace", "environment", "stage", "name", "attributes"].
+    Defaults to ["namespace", "environment", "location", "name", "attributes"].
     You can omit any of the 6 labels ("tenant" is the 6th), but at least one must be present.
     EOT
 }
@@ -276,4 +275,4 @@ variable "descriptor_formats" {
     EOT
 }
 
-#### End of copy of cloudposse/terraform-null-label/variables.tf
+#### End of copy of openevidence/terraform-null-label/variables.tf

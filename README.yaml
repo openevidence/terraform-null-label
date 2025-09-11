@@ -6,7 +6,7 @@ tags:
   - naming-convention
   - name
   - namespace
-  - stage
+  - environment
 categories:
   - terraform-modules/supported
 license: APACHE2
@@ -28,17 +28,17 @@ description: |-
   1. namespace
   1. tenant
   1. environment
-  1. stage
+  1. location
   1. name
   1. attributes
 
-  This module generates IDs using the following convention by default: `{namespace}-{environment}-{stage}-{name}-{attributes}`.
+  This module generates IDs using the following convention by default: `{namespace}-{environment}-{location}-{name}-{attributes}`.
   However, it is highly configurable. The delimiter (e.g. `-`) is configurable. Each label item is optional (although you must provide at least one).
-  So if you prefer the term `stage` to `environment` and do not need `tenant`, you can exclude them
-  and the label `id` will look like `{namespace}-{stage}-{name}-{attributes}`.
+  So if you prefer the term `environment` to `location` and do not need `tenant`, you can exclude them
+  and the label `id` will look like `{namespace}-{environment}-{name}-{attributes}`.
   - The `tenant` label was introduced in v0.25.0. To preserve backward compatibility, it is not included by default.
   - The `attributes` input is actually a list of strings and `{attributes}` expands to the list elements joined by the delimiter.
-  - If `attributes` is excluded but `namespace`, `stage`, and `environment` are included, `id` will look like `{namespace}-{environment}-{stage}-{name}`.
+  - If `attributes` is excluded but `namespace`, `environment`, and `location` are included, `id` will look like `{namespace}-{environment}-{location}-{name}`.
     Excluding `attributes` is discouraged, though, because attributes are the main way modules modify the ID to ensure uniqueness when provisioning the same resource types.
   - If you want the label items in a different order, you can specify that, too, with the `label_order` list.
   - You can set a maximum length for the `id`, and the module will create a (probably) unique name that fits within that length.
@@ -73,8 +73,8 @@ description: |-
   The Cloud Posse convention is to use labels as follows:
   - `namespace`: A short (3-4 letters) abbreviation of the company name, to ensure globally unique IDs for things like S3 buckets
   - `tenant`: _(Rarely needed)_ When a company creates a dedicated resource per customer, `tenant` can be used to identify the customer the resource is dedicated to
-  - `environment`: A [short abbreviation](https://github.com/cloudposse/terraform-aws-utils/#introduction) for the AWS region hosting the resource, or `gbl` for resources like IAM roles that have no region
-  - `stage`: The name or role of the account the resource is for, such as `prod` or `dev`
+  - `environment`: The name or role of the account the resource is for, such as `prod` or `dev`
+  - `location`: A [short abbreviation](https://github.com/cloudposse/terraform-aws-utils/#introduction) for the AWS location hosting the resource, or `gbl` for resources like IAM roles that have no location
   - `name`: The name of the component that owns the resources, such as `eks` or `rds`
 
   **NOTE:** The `null` originally referred to the primary Terraform [provider](https://www.terraform.io/docs/providers/null/index.html) used in this module.
@@ -116,11 +116,11 @@ usage: |-
     # Cloud Posse recommends pinning every module to a specific version
     # version = "x.x.x"
 
-    namespace  = "eg"
-    stage      = "prod"
-    name       = "bastion"
-    attributes = ["public"]
-    delimiter  = "-"
+    namespace   = "eg"
+    environment = "prod"
+    name        = "bastion"
+    attributes  = ["public"]
+    delimiter   = "-"
 
     tags = {
       "BusinessUnit" = "XYZ",
@@ -129,7 +129,7 @@ usage: |-
   }
   ```
 
-  This will create an `id` with the value of `eg-prod-bastion-public` because when generating `id`, the default order is `namespace`, `environment`, `stage`,  `name`, `attributes`
+  This will create an `id` with the value of `eg-prod-bastion-public` because when generating `id`, the default order is `namespace`, `environment`, `location`,  `name`, `attributes`
   (you can override it by using the `label_order` variable, see [Advanced Example 3](#advanced-example-3)).
 
   Now reference the label when creating an instance:
@@ -170,10 +170,10 @@ usage: |-
     # Cloud Posse recommends pinning every module to a specific version
     # version = "x.x.x"
 
-    namespace  = "eg"
-    stage      = "prod"
-    name       = "bastion"
-    delimiter  = "-"
+    namespace   = "eg"
+    environment = "prod"
+    name        = "bastion"
+    delimiter   = "-"
 
     tags = {
       "BusinessUnit" = "XYZ",
@@ -255,7 +255,7 @@ usage: |-
       {
           key = "Name",
           propagate_at_launch = true,
-          value = "namespace-stage-name"
+          value = "namespace-environment-name"
       },
       {
           key = "Namespace",
@@ -265,7 +265,7 @@ usage: |-
       {
           key = "Stage",
           propagate_at_launch = true,
-          value = "stage"
+          value = "environment"
       }
   ]
   ```
@@ -277,10 +277,10 @@ usage: |-
   # terraform-null-label example #
   ################################
   module "label" {
-    source    = "../../"
-    namespace = "cp"
-    stage     = "prod"
-    name      = "app"
+    source      = "../../"
+    namespace   = "cp"
+    environment = "prod"
+    name        = "app"
 
     tags = {
       BusinessUnit = "Finance"
@@ -355,16 +355,16 @@ usage: |-
 
     namespace   = "CloudPosse"
     tenant      = "H.R.H"
-    environment = "UAT"
-    stage       = "build"
+    environment = "build"
+    location      = "USC1"
     name        = "Winston Churchroom"
     attributes  = ["fire", "water", "earth", "air"]
 
-    label_order = ["name", "tenant", "environment", "stage", "attributes"]
+    label_order = ["name", "tenant", "environment", "location", "attributes"]
 
     tags = {
-      "City"        = "Dublin"
-      "Environment" = "Private"
+      "City"   = "Dublin"
+      "Location" = "Global"
     }
   }
 
@@ -373,10 +373,10 @@ usage: |-
     # Cloud Posse recommends pinning every module to a specific version
     # version     = "x.x.x"
 
-    name      = "Charlie"
-    tenant    = "" # setting to `null` would have no effect
-    stage     = "test"
-    delimiter = "+"
+    name        = "Charlie"
+    tenant      = "" # setting to `null` would have no effect
+    environment = "test"
+    delimiter   = "+"
     regex_replace_chars = "/[^a-zA-Z0-9-+]/"
 
     additional_tag_map = {
@@ -385,8 +385,8 @@ usage: |-
     }
 
     tags = {
-      "City"        = "London"
-      "Environment" = "Public"
+      "City"   = "London"
+      "Location" = "USW2"
     }
 
     context   = module.label1.context
@@ -397,9 +397,9 @@ usage: |-
     # Cloud Posse recommends pinning every module to a specific version
     # version     = "x.x.x"
 
-    name      = "Starfish"
-    stage     = "release"
-    delimiter = "."
+    name        = "Starfish"
+    environment = "release"
+    delimiter   = "."
     regex_replace_chars = "/[^-a-zA-Z0-9.]/"
 
     tags = {
@@ -422,10 +422,10 @@ usage: |-
       "air",
     ])
     "delimiter" = "-"
-    "id" = "winstonchurchroom-hrh-uat-build-fire-water-earth-air"
+    "id" = "winstonchurchroom-hrh-build-usc1-fire-water-earth-air"
     "name" = "winstonchurchroom"
     "namespace" = "cloudposse"
-    "stage" = "build"
+    "environment" = "build"
     "tenant" = "hrh"
   }
   label1_context = {
@@ -438,24 +438,24 @@ usage: |-
     ])
     "delimiter" = tostring(null)
     "enabled" = true
-    "environment" = "UAT"
+    "location" = "USC1"
     "id_length_limit" = tonumber(null)
     "label_key_case" = tostring(null)
     "label_order" = tolist([
       "name",
       "tenant",
       "environment",
-      "stage",
+      "location",
       "attributes",
     ])
     "label_value_case" = tostring(null)
     "name" = "Winston Churchroom"
     "namespace" = "CloudPosse"
     "regex_replace_chars" = tostring(null)
-    "stage" = "build"
+    "environment" = "build"
     "tags" = {
       "City" = "Dublin"
-      "Environment" = "Private"
+      "location" = "Global"
     }
     "tenant" = "H.R.H"
   }
@@ -469,26 +469,26 @@ usage: |-
     ])
     "delimiter" = "-"
     "enabled" = true
-    "environment" = "uat"
+    "location" = "usc1"
     "id_length_limit" = 0
     "label_key_case" = "title"
     "label_order" = tolist([
       "name",
       "tenant",
       "environment",
-      "stage",
+      "location",
       "attributes",
     ])
     "label_value_case" = "lower"
     "name" = "winstonchurchroom"
     "namespace" = "cloudposse"
     "regex_replace_chars" = "/[^-a-zA-Z0-9]/"
-    "stage" = "build"
+    "environment" = "build"
     "tags" = {
       "Attributes" = "fire-water-earth-air"
       "City" = "Dublin"
-      "Environment" = "Private"
-      "Name" = "winstonchurchroom-hrh-uat-build-fire-water-earth-air"
+      "Location" = "Global"
+      "Name" = "winstonchurchroom-hrh-build-usc1-fire-water-earth-air"
       "Namespace" = "cloudposse"
       "Stage" = "build"
       "Tenant" = "hrh"
@@ -498,8 +498,8 @@ usage: |-
   label1_tags = tomap({
     "Attributes" = "fire-water-earth-air"
     "City" = "Dublin"
-    "Environment" = "Private"
-    "Name" = "winstonchurchroom-hrh-uat-build-fire-water-earth-air"
+    "Location" = "Global"
+    "Name" = "winstonchurchroom-hrh-build-usc1-fire-water-earth-air"
     "Namespace" = "cloudposse"
     "Stage" = "build"
     "Tenant" = "hrh"
@@ -512,10 +512,10 @@ usage: |-
       "air",
     ])
     "delimiter" = "+"
-    "id" = "charlie+uat+test+fire+water+earth+air"
+    "id" = "charlie+test+usc1+fire+water+earth+air"
     "name" = "charlie"
     "namespace" = "cloudposse"
-    "stage" = "test"
+    "environment" = "test"
     "tenant" = ""
   }
   label2_context = {
@@ -531,32 +531,32 @@ usage: |-
     ])
     "delimiter" = "+"
     "enabled" = true
-    "environment" = "UAT"
+    "location" = "USC1"
     "id_length_limit" = tonumber(null)
     "label_key_case" = tostring(null)
     "label_order" = tolist([
       "name",
       "tenant",
       "environment",
-      "stage",
+      "location",
       "attributes",
     ])
     "label_value_case" = tostring(null)
     "name" = "Charlie"
     "namespace" = "CloudPosse"
     "regex_replace_chars" = "/[^a-zA-Z0-9-+]/"
-    "stage" = "test"
+    "environment" = "test"
     "tags" = {
       "City" = "London"
-      "Environment" = "Public"
+      "Location" = "USW2"
     }
     "tenant" = ""
   }
   label2_tags = tomap({
     "Attributes" = "fire+water+earth+air"
     "City" = "London"
-    "Environment" = "Public"
-    "Name" = "charlie+uat+test+fire+water+earth+air"
+    "Location" = "USW2"
+    "Name" = "charlie+test+usc1+fire+water+earth+air"
     "Namespace" = "cloudposse"
     "Stage" = "test"
   })
@@ -575,15 +575,15 @@ usage: |-
     },
     {
       "additional_tag" = "yes"
-      "key" = "Environment"
+      "key" = "Location"
       "propagate_at_launch" = "true"
-      "value" = "Public"
+      "value" = "USW2"
     },
     {
       "additional_tag" = "yes"
       "key" = "Name"
       "propagate_at_launch" = "true"
-      "value" = "charlie+uat+test+fire+water+earth+air"
+      "value" = "charlie+test+usc1+fire+water+earth+air"
     },
     {
       "additional_tag" = "yes"
@@ -606,10 +606,10 @@ usage: |-
       "air",
     ])
     "delimiter" = "."
-    "id" = "starfish.h.r.h.uat.release.fire.water.earth.air"
+    "id" = "starfish.h.r.h.release.usc1.fire.water.earth.air"
     "name" = "starfish"
     "namespace" = "cloudposse"
-    "stage" = "release"
+    "environment" = "release"
     "tenant" = "h.r.h"
   }
   label3_context = {
@@ -622,26 +622,26 @@ usage: |-
     ])
     "delimiter" = "."
     "enabled" = true
-    "environment" = "UAT"
+    "location" = "USC1"
     "id_length_limit" = tonumber(null)
     "label_key_case" = tostring(null)
     "label_order" = tolist([
       "name",
       "tenant",
       "environment",
-      "stage",
+      "location",
       "attributes",
     ])
     "label_value_case" = tostring(null)
     "name" = "Starfish"
     "namespace" = "CloudPosse"
     "regex_replace_chars" = "/[^-a-zA-Z0-9.]/"
-    "stage" = "release"
+    "environment" = "release"
     "tags" = {
       "Animal" = "Rabbit"
       "City" = "Dublin"
       "Eat" = "Carrot"
-      "Environment" = "Private"
+      "Location" = "Global"
     }
     "tenant" = "H.R.H"
   }
@@ -655,28 +655,28 @@ usage: |-
     ])
     "delimiter" = "."
     "enabled" = true
-    "environment" = "uat"
+    "location" = "usc1"
     "id_length_limit" = 0
     "label_key_case" = "title"
     "label_order" = tolist([
       "name",
       "tenant",
       "environment",
-      "stage",
+      "location",
       "attributes",
     ])
     "label_value_case" = "lower"
     "name" = "starfish"
     "namespace" = "cloudposse"
     "regex_replace_chars" = "/[^-a-zA-Z0-9.]/"
-    "stage" = "release"
+    "environment" = "release"
     "tags" = {
       "Animal" = "Rabbit"
       "Attributes" = "fire.water.earth.air"
       "City" = "Dublin"
       "Eat" = "Carrot"
-      "Environment" = "Private"
-      "Name" = "starfish.h.r.h.uat.release.fire.water.earth.air"
+      "Location" = "Global"
+      "Name" = "starfish.h.r.h.release.usc1.fire.water.earth.air"
       "Namespace" = "cloudposse"
       "Stage" = "release"
       "Tenant" = "h.r.h"
@@ -688,8 +688,8 @@ usage: |-
     "Attributes" = "fire.water.earth.air"
     "City" = "Dublin"
     "Eat" = "Carrot"
-    "Environment" = "Private"
-    "Name" = "starfish.h.r.h.uat.release.fire.water.earth.air"
+    "Location" = "Global"
+    "Name" = "starfish.h.r.h.release.usc1.fire.water.earth.air"
     "Namespace" = "cloudposse"
     "Stage" = "release"
     "Tenant" = "h.r.h"

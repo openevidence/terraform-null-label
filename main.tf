@@ -4,7 +4,7 @@ locals {
     # The `tenant` label was introduced in v0.25.0. To preserve backward compatibility, or, really, to ensure
     # that people using the `tenant` label are alerted that it was not previously supported if they try to
     # use it in an older version, it is not included by default.
-    label_order         = ["namespace", "environment", "stage", "name", "attributes"]
+    label_order         = ["namespace", "environment", "location", "name", "attributes"]
     regex_replace_chars = "/[^-a-zA-Z0-9]/"
     delimiter           = "-"
     replacement         = ""
@@ -50,7 +50,7 @@ locals {
     # tenant was introduced in v0.25.0, prior context versions do not have it
     tenant      = var.tenant == null ? lookup(var.context, "tenant", null) : var.tenant
     environment = var.environment == null ? var.context.environment : var.environment
-    stage       = var.stage == null ? var.context.stage : var.stage
+    location    = var.location == null ? var.context.location : var.location
     name        = var.name == null ? var.context.name : var.name
     delimiter   = var.delimiter == null ? var.context.delimiter : var.delimiter
     # modules tack on attributes (passed by var) to the end of the list (passed by context)
@@ -73,7 +73,7 @@ locals {
   regex_replace_chars = coalesce(local.input.regex_replace_chars, local.defaults.regex_replace_chars)
 
   # string_label_names are names of inputs that are strings (not list of strings) used as labels
-  string_label_names = ["namespace", "tenant", "environment", "stage", "name"]
+  string_label_names = ["namespace", "tenant", "environment", "location", "name"]
   normalized_labels = { for k in local.string_label_names : k =>
     local.input[k] == null ? "" : replace(local.input[k], local.regex_replace_chars, local.replacement)
   }
@@ -93,7 +93,7 @@ locals {
   namespace   = local.formatted_labels["namespace"]
   tenant      = local.formatted_labels["tenant"]
   environment = local.formatted_labels["environment"]
-  stage       = local.formatted_labels["stage"]
+  location    = local.formatted_labels["location"]
   name        = local.formatted_labels["name"]
 
   delimiter        = local.input.delimiter == null ? local.defaults.delimiter : local.input.delimiter
@@ -124,7 +124,7 @@ locals {
     namespace   = local.namespace
     tenant      = local.tenant
     environment = local.environment
-    stage       = local.stage
+    location    = local.location
     # For AWS we need `Name` to be disambiguated since it has a special meaning
     name       = local.id
     attributes = local.id_context.attributes
@@ -141,7 +141,7 @@ locals {
     namespace   = local.namespace
     tenant      = local.tenant
     environment = local.environment
-    stage       = local.stage
+    location    = local.location
     name        = local.name
     attributes  = join(local.delimiter, local.attributes)
   }
@@ -172,7 +172,7 @@ locals {
     namespace           = local.namespace
     tenant              = local.tenant
     environment         = local.environment
-    stage               = local.stage
+    location            = local.location
     name                = local.name
     delimiter           = local.delimiter
     attributes          = local.attributes
