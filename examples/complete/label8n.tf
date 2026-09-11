@@ -3,7 +3,7 @@ module "label8n" {
 
   enabled          = true
   namespace        = "EG"
-  environment      = "demo"
+  short_region     = "demo"
   name             = "blue"
   attributes       = ["eks", "ClusteR"]
   delimiter        = "-"

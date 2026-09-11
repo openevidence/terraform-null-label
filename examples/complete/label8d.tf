@@ -1,9 +1,9 @@
 module "label8d" {
   source = "../../"
 
-  enabled     = true
-  namespace   = "eg"
-  environment = "demo"
+  enabled      = true
+  namespace    = "eg"
+  short_region = "demo"
   # Verify that an empty "name" will not suppress the "Name" tag
   tenant     = "blue"
   attributes = ["cluster"]
@@ -13,10 +13,10 @@ module "label8d" {
     "kubernetes.io/cluster/" = "shared"
   }
 
-  label_order = ["namespace", "environment", "tenant", "attributes"]
+  label_order = ["namespace", "short_region", "tenant", "attributes"]
 
   # Verify an empty "stage" label will not be exported as a tag
-  labels_as_tags = ["environment", "name", "attributes", "stage"]
+  labels_as_tags = ["short_region", "name", "attributes", "stage"]
 }
 
 module "label8d_chained" {

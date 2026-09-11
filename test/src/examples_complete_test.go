@@ -22,7 +22,7 @@ type NLContext struct {
 	Attributes        []string          `json:"attributes"`
 	Delimiter         interface{}       `json:"delimiter"`
 	Enabled           bool              `json:"enabled"`
-	Environment       interface{}       `json:"environment"`
+	ShortRegion       interface{}       `json:"short_region"`
 	LabelOrder        []string          `json:"label_order"`
 	Name              interface{}       `json:"name"`
 	Namespace         interface{}       `json:"namespace"`
@@ -72,12 +72,12 @@ func TestExamplesComplete(t *testing.T) {
 		Enabled:     true,
 		Namespace:   "CloudPosse",
 		Tenant:      "H.R.H",
-		Environment: "UAT",
+		ShortRegion: "UAT",
 		Stage:       "build",
 		Name:        "Winston Churchroom",
 		Attributes:  []string{"fire", "water", "earth", "air"},
 		Delimiter:   nil,
-		LabelOrder:  []string{"name", "tenant", "environment", "stage", "attributes"},
+		LabelOrder:  []string{"name", "tenant", "short_region", "stage", "attributes"},
 		Tags: map[string]string{
 			"City":        "Dublin",
 			"Environment": "Private",
@@ -89,18 +89,19 @@ func TestExamplesComplete(t *testing.T) {
 	_ = reprint.FromTo(&expectedLabel1Context, &expectedLabel1NormalizedContext)
 	expectedLabel1NormalizedContext.Namespace = "cloudposse"
 	expectedLabel1NormalizedContext.Tenant = "hrh"
-	expectedLabel1NormalizedContext.Environment = "uat"
+	expectedLabel1NormalizedContext.ShortRegion = "uat"
 	expectedLabel1NormalizedContext.Name = "winstonchurchroom"
 	expectedLabel1NormalizedContext.Delimiter = "-"
 	expectedLabel1NormalizedContext.RegexReplaceChars = "/[^-a-zA-Z0-9]/"
 	expectedLabel1NormalizedContext.Tags = map[string]string{
-		"City":        "Dublin",
-		"Environment": "Private",
-		"Namespace":   "cloudposse",
-		"Stage":       "build",
-		"Tenant":      "hrh",
-		"Name":        "winstonchurchroom-hrh-uat-build-fire-water-earth-air",
-		"Attributes":  "fire-water-earth-air",
+		"City":         "Dublin",
+		"Environment":  "Private",
+		"Namespace":    "cloudposse",
+		"Short_region": "uat",
+		"Stage":        "build",
+		"Tenant":       "hrh",
+		"Name":         "winstonchurchroom-hrh-uat-build-fire-water-earth-air",
+		"Attributes":   "fire-water-earth-air",
 	}
 
 	var label1NormalizedContext, label1Context NLContext
@@ -197,13 +198,13 @@ func TestExamplesComplete(t *testing.T) {
 	label6f := terraform.OutputMap(t, terraformOptions, "label6f")
 	label6fTags := terraform.OutputMap(t, terraformOptions, "label6f_tags")
 	// Test of setting var.label_key_case = "lower", var.label_value_case = "upper"
-	assert.Equal(t, "CP~UW2~PRD~NULL-LABEL", label6f["id_full"])
+	assert.Equal(t, "CP~PRD~UW2~NULL-LABEL", label6f["id_full"])
 	assert.Equal(t, label6f["id_full"], label6f["id"], "id should not be truncated")
 	assert.Equal(t, label6f["id"], label6fTags["name"], "Name tag should match ID")
 
 	label6t := terraform.OutputMap(t, terraformOptions, "label6t")
 	label6tTags := terraform.OutputMap(t, terraformOptions, "label6t_tags")
-	assert.Equal(t, "CPUW2PRDNULL-LABEL", label6t["id_full"])
+	assert.Equal(t, "CPPRDUW2NULL-LABEL", label6t["id_full"])
 	assert.NotEqual(t, label6t["id_full"], label6t["id"], "id should be truncated")
 	assert.Equal(t, label6t["id"], label6tTags["name"], "Name tag should match ID")
 	assert.Equal(t, label6t["id_length_limit"], fmt.Sprintf("%d", len(label6t["id"])),
@@ -226,9 +227,9 @@ func TestExamplesComplete(t *testing.T) {
 
 	// Verify that apply with `label_key_case=title` and `label_value_case=lower` returns expected values of id, tags, context tags
 	label8dExpectedTags := map[string]string{
-		"Attributes":  "cluster",
-		"Environment": "demo",
-		"Name":        "eg-demo-blue-cluster",
+		"Attributes":   "cluster",
+		"Short_region": "demo",
+		"Name":         "eg-demo-blue-cluster",
 		// Suppressed by labels_as_tags: "Namespace":              "eg",
 		"kubernetes.io/cluster/": "shared",
 	}
@@ -238,7 +239,7 @@ func TestExamplesComplete(t *testing.T) {
 	label8dChained := terraform.Output(t, terraformOptions, "label8d_chained_context_labels_as_tags")
 	assert.Equal(t, "eg-demo-blue-cluster", label8dID)
 	assert.Equal(t, label8dID, label8dContextID, "ID and context ID should be equal")
-	assert.Equal(t, "attributes-environment-name-stage", label8dChained)
+	assert.Equal(t, "attributes-name-short_region-stage", label8dChained)
 
 	label8dTags := terraform.OutputMap(t, terraformOptions, "label8d_tags")
 	label8dContextTags := terraform.OutputMap(t, terraformOptions, "label8d_context_tags")
@@ -249,7 +250,7 @@ func TestExamplesComplete(t *testing.T) {
 	// Verify that apply with `label_key_case=lower` and  `label_value_case=lower` returns expected values of id, tags, context tags
 	label8lExpectedTags := map[string]string{
 		"attributes":             "cluster",
-		"environment":            "demo",
+		"short_region":           "demo",
 		"name":                   "eg-demo-blue-cluster",
 		"namespace":              "eg",
 		"kubernetes.io/cluster/": "shared",
@@ -270,7 +271,7 @@ func TestExamplesComplete(t *testing.T) {
 	// Verify that apply with `label_key_case=title` and  `label_value_case=title` returns expected values of id, tags, context tags
 	label8tExpectedTags := map[string]string{
 		"Attributes":             "Eks-Cluster",
-		"Environment":            "Demo",
+		"Short_region":           "Demo",
 		"Name":                   "Eg-Demo-Blue-Eks-Cluster",
 		"Namespace":              "Eg",
 		"kubernetes.io/cluster/": "shared",
@@ -290,7 +291,7 @@ func TestExamplesComplete(t *testing.T) {
 	// Verify that apply with `label_key_case=upper` and  `label_value_case=upper` returns expected values of id, tags, context tags
 	label8uExpectedTags := map[string]string{
 		"ATTRIBUTES":             "CLUSTER",
-		"ENVIRONMENT":            "DEMO",
+		"SHORT_REGION":           "DEMO",
 		"NAME":                   "EG-DEMO-BLUE-CLUSTER",
 		"NAMESPACE":              "EG",
 		"kubernetes.io/cluster/": "shared",
@@ -310,7 +311,7 @@ func TestExamplesComplete(t *testing.T) {
 	// Verify that apply with `label_key_case=title` and  `label_value_case=none` returns expected values of id, tags, context tags
 	label8nExpectedTags := map[string]string{
 		"Attributes":             "eks-ClusteR",
-		"Environment":            "demo",
+		"Short_region":           "demo",
 		"Name":                   "EG-demo-blue-eks-ClusteR",
 		"Namespace":              "EG",
 		"kubernetes.io/cluster/": "shared",

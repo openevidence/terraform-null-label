@@ -1,12 +1,12 @@
 module "label4" {
-  source      = "../../"
-  namespace   = "CloudPosse"
-  environment = "UAT"
-  name        = "Example Cluster"
-  attributes  = ["big", "fat", "honking", "cluster"]
-  delimiter   = "-"
+  source       = "../../"
+  namespace    = "CloudPosse"
+  short_region = "UAT"
+  name         = "Example Cluster"
+  attributes   = ["big", "fat", "honking", "cluster"]
+  delimiter    = "-"
 
-  label_order = ["namespace", "stage", "environment", "attributes"]
+  label_order = ["namespace", "stage", "short_region", "attributes"]
 
   tags = {
     "City"        = "Dublin"

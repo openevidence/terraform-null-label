@@ -1,11 +1,11 @@
 module "label7a" {
-  source      = "../../"
-  enabled     = true
-  namespace   = "eg"
-  environment = "demo"
-  name        = "blue"
-  attributes  = ["cluster"]
-  delimiter   = "-"
+  source       = "../../"
+  enabled      = true
+  namespace    = "eg"
+  short_region = "demo"
+  name         = "blue"
+  attributes   = ["cluster"]
+  delimiter    = "-"
 
   tags = {
   }

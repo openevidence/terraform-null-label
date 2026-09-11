@@ -2,7 +2,7 @@ module "label8t" {
   source           = "../../"
   enabled          = true
   namespace        = "eg"
-  environment      = "demo"
+  short_region     = "demo"
   name             = "blue"
   attributes       = ["EKS", "cluster"]
   delimiter        = "-"

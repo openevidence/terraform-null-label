@@ -1,12 +1,12 @@
 module "label8dcd" {
   source = "../../"
 
-  enabled     = true
-  namespace   = "eg"
-  environment = "demo"
-  name        = "blue"
-  attributes  = ["cluster"]
-  delimiter   = "x"
+  enabled      = true
+  namespace    = "eg"
+  short_region = "demo"
+  name         = "blue"
+  attributes   = ["cluster"]
+  delimiter    = "x"
 }
 
 module "label8dcd_context" {
