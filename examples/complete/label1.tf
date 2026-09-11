@@ -1,13 +1,13 @@
 module "label1" {
-  source      = "../../"
-  namespace   = "CloudPosse"
-  tenant      = "H.R.H"
-  environment = "UAT"
-  stage       = "build"
-  name        = "Winston Churchroom"
-  attributes  = ["fire", "water", "earth", "air"]
+  source       = "../../"
+  namespace    = "CloudPosse"
+  tenant       = "H.R.H"
+  short_region = "UAT"
+  stage        = "build"
+  name         = "Winston Churchroom"
+  attributes   = ["fire", "water", "earth", "air"]
 
-  label_order = ["name", "tenant", "environment", "stage", "attributes"]
+  label_order = ["name", "tenant", "short_region", "stage", "attributes"]
 
   tags = {
     "City"        = "Dublin"

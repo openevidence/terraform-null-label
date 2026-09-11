@@ -35,18 +35,18 @@ Terraform module designed to generate consistent names and tags for resources. U
 There are 6 inputs considered "labels" or "ID elements" (because the labels are used to construct the ID):
 1. namespace
 1. tenant
-1. environment
-1. location
+1. stage
+1. short_region
 1. name
 1. attributes
 
-This module generates IDs using the following convention by default: `{namespace}-{environment}-{location}-{name}-{attributes}`.
+This module generates IDs using the following convention by default: `{namespace}-{stage}-{short_region}-{name}-{attributes}`.
 However, it is highly configurable. The delimiter (e.g. `-`) is configurable. Each label item is optional (although you must provide at least one).
-So if you prefer the term `environment` to `location` and do not need `tenant`, you can exclude them
-and the label `id` will look like `{namespace}-{environment}-{name}-{attributes}`.
+So if you prefer the term `stage` to `short_region` and do not need `tenant`, you can exclude them
+and the label `id` will look like `{namespace}-{stage}-{name}-{attributes}`.
 - The `tenant` label was introduced in v0.25.0. To preserve backward compatibility, it is not included by default.
 - The `attributes` input is actually a list of strings and `{attributes}` expands to the list elements joined by the delimiter.
-- If `attributes` is excluded but `namespace`, `environment`, and `location` are included, `id` will look like `{namespace}-{environment}-{location}-{name}`.
+- If `attributes` is excluded but `namespace`, `stage`, and `short_region` are included, `id` will look like `{namespace}-{stage}-{short_region}-{name}`.
   Excluding `attributes` is discouraged, though, because attributes are the main way modules modify the ID to ensure uniqueness when provisioning the same resource types.
 - If you want the label items in a different order, you can specify that, too, with the `label_order` list.
 - You can set a maximum length for the `id`, and the module will create a (probably) unique name that fits within that length.
@@ -81,8 +81,8 @@ All [Cloud Posse Terraform modules](https://github.com/cloudposse?utf8=%E2%9C%93
 The Cloud Posse convention is to use labels as follows:
 - `namespace`: A short (3-4 letters) abbreviation of the company name, to ensure globally unique IDs for things like S3 buckets
 - `tenant`: _(Rarely needed)_ When a company creates a dedicated resource per customer, `tenant` can be used to identify the customer the resource is dedicated to
-- `environment`: The name or role of the account the resource is for, such as `prod` or `dev`
-- `location`: A [short abbreviation](https://github.com/cloudposse/terraform-aws-utils/#introduction) for the AWS location hosting the resource, or `gbl` for resources like IAM roles that have no location
+- `stage`: The name or role of the account the resource is for, such as `prod` or `dev`
+- `short_region`: A [short abbreviation](https://github.com/cloudposse/terraform-aws-utils/#introduction) for the region hosting the resource, or `gbl` for resources like IAM roles that have no region
 - `name`: The name of the component that owns the resources, such as `eks` or `rds`
 
 **NOTE:** The `null` originally referred to the primary Terraform [provider](https://www.terraform.io/docs/providers/null/index.html) used in this module.
@@ -143,7 +143,7 @@ module "eg_prod_bastion_label" {
   # version = "x.x.x"
 
   namespace   = "eg"
-  environment = "prod"
+  stage = "prod"
   name        = "bastion"
   attributes  = ["public"]
   delimiter   = "-"
@@ -155,7 +155,7 @@ module "eg_prod_bastion_label" {
 }
 ```
 
-This will create an `id` with the value of `eg-prod-bastion-public` because when generating `id`, the default order is `namespace`, `environment`, `location`,  `name`, `attributes`
+This will create an `id` with the value of `eg-prod-bastion-public` because when generating `id`, the default order is `namespace`, `stage`, `short_region`,  `name`, `attributes`
 (you can override it by using the `label_order` variable, see [Advanced Example 3](#advanced-example-3)).
 
 Now reference the label when creating an instance:
@@ -197,7 +197,7 @@ module "eg_prod_bastion_label" {
   # version = "x.x.x"
 
   namespace   = "eg"
-  environment = "prod"
+  stage = "prod"
   name        = "bastion"
   delimiter   = "-"
 
@@ -281,7 +281,7 @@ tags = [
     {
         key = "Name",
         propagate_at_launch = true,
-        value = "namespace-environment-name"
+        value = "namespace-stage-name"
     },
     {
         key = "Namespace",
@@ -291,7 +291,7 @@ tags = [
     {
         key = "Stage",
         propagate_at_launch = true,
-        value = "environment"
+        value = "stage"
     }
 ]
 ```
@@ -305,7 +305,7 @@ Autoscaling group using propagating tagging below (full example: [autoscalinggro
 module "label" {
   source      = "../../"
   namespace   = "cp"
-  environment = "prod"
+  stage = "prod"
   name        = "app"
 
   tags = {
@@ -381,12 +381,12 @@ module "label1" {
 
   namespace   = "CloudPosse"
   tenant      = "H.R.H"
-  environment = "build"
-  location      = "USC1"
+  stage = "build"
+  short_region      = "USC1"
   name        = "Winston Churchroom"
   attributes  = ["fire", "water", "earth", "air"]
 
-  label_order = ["name", "tenant", "environment", "location", "attributes"]
+  label_order = ["name", "tenant", "stage", "short_region", "attributes"]
 
   tags = {
     "City"   = "Dublin"
@@ -401,7 +401,7 @@ module "label2" {
 
   name        = "Charlie"
   tenant      = "" # setting to `null` would have no effect
-  environment = "test"
+  stage = "test"
   delimiter   = "+"
   regex_replace_chars = "/[^a-zA-Z0-9-+]/"
 
@@ -424,7 +424,7 @@ module "label3" {
   # version     = "x.x.x"
 
   name        = "Starfish"
-  environment = "release"
+  stage = "release"
   delimiter   = "."
   regex_replace_chars = "/[^-a-zA-Z0-9.]/"
 
@@ -451,7 +451,7 @@ label1 = {
   "id" = "winstonchurchroom-hrh-build-usc1-fire-water-earth-air"
   "name" = "winstonchurchroom"
   "namespace" = "cloudposse"
-  "environment" = "build"
+  "stage" = "build"
   "tenant" = "hrh"
 }
 label1_context = {
@@ -464,24 +464,24 @@ label1_context = {
   ])
   "delimiter" = tostring(null)
   "enabled" = true
-  "location" = "USC1"
+  "short_region" = "USC1"
   "id_length_limit" = tonumber(null)
   "label_key_case" = tostring(null)
   "label_order" = tolist([
     "name",
     "tenant",
-    "environment",
-    "location",
+    "stage",
+    "short_region",
     "attributes",
   ])
   "label_value_case" = tostring(null)
   "name" = "Winston Churchroom"
   "namespace" = "CloudPosse"
   "regex_replace_chars" = tostring(null)
-  "environment" = "build"
+  "stage" = "build"
   "tags" = {
     "City" = "Dublin"
-    "location" = "Global"
+    "short_region" = "Global"
   }
   "tenant" = "H.R.H"
 }
@@ -495,21 +495,21 @@ label1_normalized_context = {
   ])
   "delimiter" = "-"
   "enabled" = true
-  "location" = "usc1"
+  "short_region" = "usc1"
   "id_length_limit" = 0
   "label_key_case" = "title"
   "label_order" = tolist([
     "name",
     "tenant",
-    "environment",
-    "location",
+    "stage",
+    "short_region",
     "attributes",
   ])
   "label_value_case" = "lower"
   "name" = "winstonchurchroom"
   "namespace" = "cloudposse"
   "regex_replace_chars" = "/[^-a-zA-Z0-9]/"
-  "environment" = "build"
+  "stage" = "build"
   "tags" = {
     "Attributes" = "fire-water-earth-air"
     "City" = "Dublin"
@@ -541,7 +541,7 @@ label2 = {
   "id" = "charlie+test+usc1+fire+water+earth+air"
   "name" = "charlie"
   "namespace" = "cloudposse"
-  "environment" = "test"
+  "stage" = "test"
   "tenant" = ""
 }
 label2_context = {
@@ -557,21 +557,21 @@ label2_context = {
   ])
   "delimiter" = "+"
   "enabled" = true
-  "location" = "USC1"
+  "short_region" = "USC1"
   "id_length_limit" = tonumber(null)
   "label_key_case" = tostring(null)
   "label_order" = tolist([
     "name",
     "tenant",
-    "environment",
-    "location",
+    "stage",
+    "short_region",
     "attributes",
   ])
   "label_value_case" = tostring(null)
   "name" = "Charlie"
   "namespace" = "CloudPosse"
   "regex_replace_chars" = "/[^a-zA-Z0-9-+]/"
-  "environment" = "test"
+  "stage" = "test"
   "tags" = {
     "City" = "London"
     "Location" = "USW2"
@@ -635,7 +635,7 @@ label3 = {
   "id" = "starfish.h.r.h.release.usc1.fire.water.earth.air"
   "name" = "starfish"
   "namespace" = "cloudposse"
-  "environment" = "release"
+  "stage" = "release"
   "tenant" = "h.r.h"
 }
 label3_context = {
@@ -648,21 +648,21 @@ label3_context = {
   ])
   "delimiter" = "."
   "enabled" = true
-  "location" = "USC1"
+  "short_region" = "USC1"
   "id_length_limit" = tonumber(null)
   "label_key_case" = tostring(null)
   "label_order" = tolist([
     "name",
     "tenant",
-    "environment",
-    "location",
+    "stage",
+    "short_region",
     "attributes",
   ])
   "label_value_case" = tostring(null)
   "name" = "Starfish"
   "namespace" = "CloudPosse"
   "regex_replace_chars" = "/[^-a-zA-Z0-9.]/"
-  "environment" = "release"
+  "stage" = "release"
   "tags" = {
     "Animal" = "Rabbit"
     "City" = "Dublin"
@@ -681,21 +681,21 @@ label3_normalized_context = {
   ])
   "delimiter" = "."
   "enabled" = true
-  "location" = "usc1"
+  "short_region" = "usc1"
   "id_length_limit" = 0
   "label_key_case" = "title"
   "label_order" = tolist([
     "name",
     "tenant",
-    "environment",
-    "location",
+    "stage",
+    "short_region",
     "attributes",
   ])
   "label_value_case" = "lower"
   "name" = "starfish"
   "namespace" = "cloudposse"
   "regex_replace_chars" = "/[^-a-zA-Z0-9.]/"
-  "environment" = "release"
+  "stage" = "release"
   "tags" = {
     "Animal" = "Rabbit"
     "Attributes" = "fire.water.earth.air"
@@ -769,7 +769,7 @@ label3_tags = tomap({
 > - **Reference Architecture.** You'll get everything you need from the ground up built using 100% infrastructure as code.
 > - **Deployment Strategy.** Adopt a proven deployment strategy with GitHub Actions, enabling automated, repeatable, and reliable software releases.
 > - **Site Reliability Engineering.** Gain total visibility into your applications and services with Datadog, ensuring high availability and performance.
-> - **Security Baseline.** Establish a secure environment from the start, with built-in governance, accountability, and comprehensive audit logs, safeguarding your operations.
+> - **Security Baseline.** Establish a secure stage from the start, with built-in governance, accountability, and comprehensive audit logs, safeguarding your operations.
 > - **GitOps.** Empower your team to manage infrastructure changes confidently and efficiently through Pull Requests, leveraging the full power of GitHub Actions.
 >
 > <a href="https://cpco.io/commercial-support?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-null-label&utm_content=commercial_support"><img alt="Request Quote" src="https://img.shields.io/badge/request%20quote-success.svg?style=for-the-badge"/></a>
