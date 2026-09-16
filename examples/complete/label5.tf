@@ -1,13 +1,13 @@
 module "label5" {
-  source      = "../../"
-  enabled     = false
-  namespace   = "eg"
-  environment = "demo"
-  name        = "blue"
-  attributes  = ["cluster"]
-  delimiter   = "-"
+  source       = "../../"
+  enabled      = false
+  namespace    = "eg"
+  short_region = "demo"
+  name         = "blue"
+  attributes   = ["cluster"]
+  delimiter    = "-"
 
-  label_order = ["namespace", "stage", "environment", "attributes"]
+  label_order = ["namespace", "stage", "short_region", "attributes"]
 
   tags = {
   }

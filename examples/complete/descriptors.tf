@@ -1,14 +1,14 @@
 module "descriptors" {
   source = "../.."
 
-  enabled     = true
-  tenant      = "H.R.H"
-  namespace   = "CloudPosse"
-  environment = "UAT"
-  stage       = "build"
-  name        = "Winston Churchroom"
-  delimiter   = "+"
-  attributes  = ["fire", "water"]
+  enabled      = true
+  tenant       = "H.R.H"
+  namespace    = "CloudPosse"
+  short_region = "UAT"
+  stage        = "build"
+  name         = "Winston Churchroom"
+  delimiter    = "+"
+  attributes   = ["fire", "water"]
 
   tags = {
     City        = "Dublin"
@@ -17,13 +17,13 @@ module "descriptors" {
   additional_tag_map = {
     propagate = true
   }
-  label_order         = ["name", "environment", "stage", "attributes"]
+  label_order         = ["name", "short_region", "stage", "attributes"]
   regex_replace_chars = "/[^a-tv-zA-Z0-9+]/" # Eliminate "u" just to verify this is taking effect
   id_length_limit     = 6
 
   descriptor_formats = {
     stack = {
-      labels = ["tenant", "environment", "stage"]
+      labels = ["tenant", "short_region", "stage"]
       format = "%v-%v-%v"
     }
     account_name = {
