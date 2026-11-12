@@ -1,3 +1,4 @@
+# tflint-ignore-file: terraform_standard_module_structure # module variables live here, not in variables.tf
 #
 # ONLY EDIT THIS FILE IN github.com/openevidence/terraform-null-label
 # All other instances of this file should be a copy of that one
